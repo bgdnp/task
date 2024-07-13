@@ -1,7 +1,7 @@
 import { CacheService } from './cache.service';
 
 type CacheProps = {
-  strategy: 'file';
+  strategy: 's3' | 'file';
   key: string;
   ttl?: number;
 };

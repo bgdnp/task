@@ -16,6 +16,7 @@ build({
   entryNames: '[dir]/[name]/index',
   target: 'es2022',
   format: 'cjs',
+  platform: 'node',
   tsconfig: 'tsconfig.json',
   outdir: 'dist',
   bundle: true,

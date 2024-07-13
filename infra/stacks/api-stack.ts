@@ -1,16 +1,21 @@
-import { Duration, Stack, StackProps } from 'aws-cdk-lib';
+import { Duration, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import { IResource, LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigateway';
 import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 import { resolve } from 'path';
 
 export class ApiStack extends Stack {
   private gateway: RestApi;
+  private cacheBucket: Bucket;
 
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
     this.gateway = new RestApi(this, 'Gateway');
+    this.cacheBucket = new Bucket(this, 'CacheBucket', {
+      removalPolicy: RemovalPolicy.DESTROY, // for demo purposes, not recommended in production
+    });
 
     this.createStatusEndpoint();
     this.createFilesEndpoint();
@@ -43,8 +48,11 @@ export class ApiStack extends Stack {
       memorySize: 1024,
       environment: {
         NODE_ENV: 'cloud',
+        CACHE_BUCKET_NAME: this.cacheBucket.bucketName,
       },
     });
+
+    this.cacheBucket.grantReadWrite(lambda);
 
     const api = this.getResource('api', this.gateway.root);
     const files = this.getResource('files', api);

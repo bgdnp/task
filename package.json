@@ -6,6 +6,9 @@
     "deploy": "npm run build && cdk deploy --all",
     "dev": "nodemon"
   },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.614.0"
+  },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.141",
     "@types/express": "^4.17.21",

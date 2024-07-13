@@ -6,7 +6,11 @@ type RawData = { items: RawDataItem[] };
 type TransformedData = Record<string, (TransformedData | string)[]>;
 
 export class FilesService {
-  @Cache({ strategy: 'file', key: 'transformed-data', ttl: 300 /* seconds */ })
+  @Cache({
+    strategy: process.env.NODE_ENV === 'cloud' ? 's3' : 'file',
+    key: 'transformed-data',
+    ttl: 300 /* seconds */,
+  })
   async getTransformedData() {
     const data = await this.getData();
 
@@ -46,7 +50,9 @@ export class FilesService {
     pathSegments.forEach((segment, index) => {
       if (index === pathSegments.length - 1) {
         // handle last segment in path
-        if (segment) parent.push(segment);
+        if (segment) {
+          parent.push(segment);
+        }
       } else {
         let nested = parent.find(
           (child) => typeof child === 'object' && Object.hasOwn(child, segment),
