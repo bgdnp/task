@@ -1,0 +1,131 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "FilesApi.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "FilesApi.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "FilesApi": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/eu-central-1",
+      "properties": {
+        "templateFile": "FilesApi.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-eu-central-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-eu-central-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-eu-central-1/837d42fce0b85b3c1a723da6fbd738c1a323a4b72566bb70b9e508bfd5c134e8.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "FilesApi.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-eu-central-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "FilesApi.assets"
+      ],
+      "metadata": {
+        "/FilesApi/Gateway/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Gateway43CB3636"
+          }
+        ],
+        "/FilesApi/Gateway/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GatewayDeployment880EB8C24e7eae5771291d5bfbe26e0bceab441d"
+          }
+        ],
+        "/FilesApi/Gateway/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GatewayDeploymentStageprod62BC6904"
+          }
+        ],
+        "/FilesApi/Gateway/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GatewayEndpoint4DF49EE0"
+          }
+        ],
+        "/FilesApi/Gateway/Default/api/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GatewayapiE09892A9"
+          }
+        ],
+        "/FilesApi/Gateway/Default/api/status/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Gatewayapistatus2B6DA41A"
+          }
+        ],
+        "/FilesApi/Gateway/Default/api/status/get/ApiPermission.FilesApiGatewayB2571825.GET..api.status": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GatewayapistatusgetApiPermissionFilesApiGatewayB2571825GETapistatusFB1B165D"
+          }
+        ],
+        "/FilesApi/Gateway/Default/api/status/get/ApiPermission.Test.FilesApiGatewayB2571825.GET..api.status": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GatewayapistatusgetApiPermissionTestFilesApiGatewayB2571825GETapistatus922EBC46"
+          }
+        ],
+        "/FilesApi/Gateway/Default/api/status/get/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GatewayapistatusgetBB67F59F"
+          }
+        ],
+        "/FilesApi/StatusFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StatusFunctionServiceRoleD90A042E"
+          }
+        ],
+        "/FilesApi/StatusFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StatusFunction598A4497"
+          }
+        ],
+        "/FilesApi/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/FilesApi/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/FilesApi/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "FilesApi"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
