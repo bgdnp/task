@@ -1,11 +1,12 @@
+import { Cache } from '@app/cache';
 import { CONFIG } from '@common/config';
-import path from 'path';
 
 type RawDataItem = { fileUrl: string };
 type RawData = { items: RawDataItem[] };
 type TransformedData = Record<string, (TransformedData | string)[]>;
 
 export class FilesService {
+  @Cache({ strategy: 'file', key: 'transformed-data' })
   async getTransformedData() {
     const data = await this.getData();
 
