@@ -10,7 +10,8 @@
     "skipLibCheck": true,
     "paths": {
       "@app/*": ["./src/app/*"],
-      "@common/*": ["./src/common/*"]
+      "@common/*": ["./src/common/*"],
+      "@services/*": ["./src/services/*"]
     }
   }
 }

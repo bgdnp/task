@@ -5,4 +5,4 @@ import { ApiStack } from '../infra/stacks';
 
 const app = new cdk.App();
 
-new ApiStack(app, 'FilesApi', { env: { region: 'eu-central-1' } });
+new ApiStack(app, 'FilesTransformerApi', { env: { region: 'eu-central-1' } });

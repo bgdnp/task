@@ -1,5 +1,5 @@
 import { createLambdaHandler, Response } from '@app/http';
-import { FilesService } from '../services/files';
+import { FilesService } from '@services/files';
 
 export const handler = createLambdaHandler(async () => {
   const service = new FilesService();

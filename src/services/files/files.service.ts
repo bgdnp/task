@@ -9,7 +9,7 @@ export class FilesService {
   @Cache({
     strategy: process.env.NODE_ENV === 'cloud' ? 's3' : 'file',
     key: 'transformed-data',
-    ttl: 300 /* seconds */,
+    ttl: 900 /* seconds */,
   })
   async getTransformedData() {
     const data = await this.getData();

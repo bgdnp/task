@@ -4,6 +4,8 @@ import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 import { resolve } from 'path';
+import { Rule, Schedule } from 'aws-cdk-lib/aws-events';
+import { LambdaFunction } from 'aws-cdk-lib/aws-events-targets';
 
 export class ApiStack extends Stack {
   private gateway: RestApi;
@@ -19,6 +21,7 @@ export class ApiStack extends Stack {
 
     this.createStatusEndpoint();
     this.createFilesEndpoint();
+    this.createCachePreloadCron();
   }
 
   private createStatusEndpoint() {
@@ -26,7 +29,7 @@ export class ApiStack extends Stack {
       runtime: Runtime.NODEJS_20_X,
       code: Code.fromAsset(resolve(process.cwd(), 'dist/status')),
       handler: 'index.handler',
-      functionName: 'status-handler',
+      functionName: 'get-status-handler',
       environment: {
         NODE_ENV: 'cloud',
       },
@@ -43,7 +46,7 @@ export class ApiStack extends Stack {
       runtime: Runtime.NODEJS_20_X,
       code: Code.fromAsset(resolve(process.cwd(), 'dist/get-transformed-files')),
       handler: 'index.handler',
-      functionName: 'files-handler',
+      functionName: 'get-transformed-files-handler',
       timeout: Duration.seconds(30),
       memorySize: 1024,
       environment: {
@@ -58,6 +61,30 @@ export class ApiStack extends Stack {
     const files = this.getResource('files', api);
 
     files.addMethod('get', new LambdaIntegration(lambda));
+  }
+
+  private createCachePreloadCron() {
+    const lambda = new Function(this, 'CachePreloadFunction', {
+      runtime: Runtime.NODEJS_20_X,
+      code: Code.fromAsset(resolve(process.cwd(), 'dist/get-transformed-files')),
+      handler: 'index.handler',
+      functionName: 'cache-preload-handler',
+      timeout: Duration.seconds(30),
+      memorySize: 1024,
+      environment: {
+        NODE_ENV: 'cloud',
+        CACHE_BUCKET_NAME: this.cacheBucket.bucketName,
+        DISABLE_CACHE: 'true',
+      },
+    });
+
+    this.cacheBucket.grantReadWrite(lambda);
+
+    const rule = new Rule(this, 'CachePreloadCron', {
+      schedule: Schedule.rate(Duration.minutes(10)),
+    });
+
+    rule.addTarget(new LambdaFunction(lambda));
   }
 
   private getResource(name: string, parent: IResource) {

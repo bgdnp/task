@@ -1,4 +1,4 @@
-import { mkdir, readFile, rm, stat, writeFile } from 'fs/promises';
+import { mkdir, readFile, stat, writeFile } from 'fs/promises';
 import { CacheStrategy } from './strategy.interface';
 import { resolve } from 'path';
 import { existsSync } from 'fs';
