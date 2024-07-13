@@ -1,4 +1,4 @@
-import { Stack, StackProps } from 'aws-cdk-lib';
+import { Duration, Stack, StackProps } from 'aws-cdk-lib';
 import { IResource, LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigateway';
 import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
@@ -13,6 +13,7 @@ export class ApiStack extends Stack {
     this.gateway = new RestApi(this, 'Gateway');
 
     this.createStatusEndpoint();
+    this.createFilesEndpoint();
   }
 
   private createStatusEndpoint() {
@@ -30,6 +31,25 @@ export class ApiStack extends Stack {
     const status = this.getResource('status', api);
 
     status.addMethod('get', new LambdaIntegration(lambda));
+  }
+
+  private createFilesEndpoint() {
+    const lambda = new Function(this, 'FilesFunction', {
+      runtime: Runtime.NODEJS_20_X,
+      code: Code.fromAsset(resolve(process.cwd(), 'dist/get-transformed-files')),
+      handler: 'index.handler',
+      functionName: 'files-handler',
+      timeout: Duration.seconds(30),
+      memorySize: 1024,
+      environment: {
+        NODE_ENV: 'cloud',
+      },
+    });
+
+    const api = this.getResource('api', this.gateway.root);
+    const files = this.getResource('files', api);
+
+    files.addMethod('get', new LambdaIntegration(lambda));
   }
 
   private getResource(name: string, parent: IResource) {

@@ -14,7 +14,7 @@ const entryPoints = (path = './src/functions'): string[] => {
 build({
   entryPoints: entryPoints(),
   entryNames: '[dir]/[name]/index',
-  target: 'es2016',
+  target: 'es2022',
   format: 'cjs',
   tsconfig: 'tsconfig.json',
   outdir: 'dist',
