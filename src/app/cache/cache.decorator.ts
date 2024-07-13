@@ -3,10 +3,11 @@ import { CacheService } from './cache.service';
 type CacheProps = {
   strategy: 'file';
   key: string;
+  ttl?: number;
 };
 
 export function Cache(props: CacheProps) {
-  const cache = new CacheService(props.strategy);
+  const cache = new CacheService(props.strategy, props.ttl);
 
   return function <TMethod extends Function>(target: TMethod) {
     return async function (this: any, ...args: any[]) {

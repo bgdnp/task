@@ -6,7 +6,7 @@ type RawData = { items: RawDataItem[] };
 type TransformedData = Record<string, (TransformedData | string)[]>;
 
 export class FilesService {
-  @Cache({ strategy: 'file', key: 'transformed-data' })
+  @Cache({ strategy: 'file', key: 'transformed-data', ttl: 300 /* seconds */ })
   async getTransformedData() {
     const data = await this.getData();
 

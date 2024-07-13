@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from 'fs/promises';
+import { mkdir, readFile, rm, stat, writeFile } from 'fs/promises';
 import { CacheStrategy } from './strategy.interface';
 import { resolve } from 'path';
 import { existsSync } from 'fs';
@@ -14,11 +14,19 @@ export class FileStrategy implements CacheStrategy {
     await writeFile(resolve(cacheDir, key), JSON.stringify(data));
   }
 
-  async load<T>(key: string): Promise<T | null> {
+  async load<T>(key: string, ttl?: number): Promise<T | null> {
     const path = resolve(process.cwd(), 'cache', key);
 
     if (!existsSync(path)) {
       return null;
+    }
+
+    if (ttl) {
+      const { mtime } = await stat(path);
+
+      if (new Date(mtime).getTime() + ttl * 1000 < Date.now()) {
+        return null;
+      }
     }
 
     const file = await readFile(path);
