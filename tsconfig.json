@@ -11,6 +11,7 @@
     "paths": {
       "@app/*": ["./src/app/*"],
       "@common/*": ["./src/common/*"]
-    }
+    },
+    "typeRoots": ["./types"]
   }
 }
