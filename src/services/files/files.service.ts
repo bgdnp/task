@@ -1,5 +1,6 @@
 import { Cache } from '@app/cache';
 import { CONFIG } from '@common/config';
+import { DataFetchFailedException, DataTransformationFailedException } from '@common/exceptions';
 
 type RawDataItem = { fileUrl: string };
 type RawData = { items: RawDataItem[] };
@@ -17,27 +18,35 @@ export class FilesService {
     return this.transformData(data);
   }
 
-  private async getData(): Promise<RawData> {
-    const response = await fetch(CONFIG.dataSource);
-    const data = (await response.json()) as RawData;
+  async getData(): Promise<RawData> {
+    try {
+      const response = await fetch(CONFIG.dataSource);
+      const data = (await response.json()) as RawData;
 
-    return data;
+      return data;
+    } catch (err) {
+      throw new DataFetchFailedException(err as Error);
+    }
   }
 
-  private transformData(data: RawData): TransformedData {
-    const transformed: TransformedData = {};
+  transformData(data: RawData): TransformedData {
+    try {
+      const transformed: TransformedData = {};
 
-    data.items.forEach(({ fileUrl }) => {
-      if (/[^\x20-\x7E]/.test(fileUrl)) {
-        // skip urls with weird characters
-        // this is not specified in task but urls like this http://34.8.32.234:48183/��ǰ��Ŀ����Ŀ¼���ز��ļ�(����·��)/ are annoying :)
-        return;
-      }
+      data.items.forEach(({ fileUrl }) => {
+        if (/[^\x20-\x7E]/.test(fileUrl)) {
+          // skip urls with weird characters
+          // this is not specified in task but urls like this http://34.8.32.234:48183/��ǰ��Ŀ����Ŀ¼���ز��ļ�(����·��)/ are annoying :)
+          return;
+        }
 
-      this.addUrl(fileUrl, transformed);
-    });
+        this.addUrl(fileUrl, transformed);
+      });
 
-    return transformed;
+      return transformed;
+    } catch (err) {
+      throw new DataTransformationFailedException(err as Error);
+    }
   }
 
   private addUrl(url: string, transformed: TransformedData): void {

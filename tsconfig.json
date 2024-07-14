@@ -12,6 +12,7 @@
       "@app/*": ["./src/app/*"],
       "@common/*": ["./src/common/*"],
       "@services/*": ["./src/services/*"]
-    }
+    },
+    "typeRoots": ["./types", "./node_modules/@types/"]
   }
 }

@@ -1,3 +1,4 @@
+import { CacheException } from '@common/exceptions';
 import { FileStrategy } from './strategies/file.strategy';
 import { S3Strategy } from './strategies/s3.strategy';
 import { CacheStrategy } from './strategies/strategy.interface';
@@ -22,7 +23,11 @@ export class CacheService {
   }
 
   async save<T>(key: string, data: T): Promise<void> {
-    return await this.strategy.save(key, data);
+    try {
+      return await this.strategy.save(key, data);
+    } catch (err) {
+      throw new CacheException('Saving to cache failed', err as Error);
+    }
   }
 
   async load<T>(key: string): Promise<T | null> {
@@ -30,6 +35,10 @@ export class CacheService {
       return null;
     }
 
-    return await this.strategy.load(key, this.ttl);
+    try {
+      return await this.strategy.load(key, this.ttl);
+    } catch (err) {
+      throw new CacheException('Loading from cache failed', err as Error);
+    }
   }
 }
