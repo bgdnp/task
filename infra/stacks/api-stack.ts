@@ -6,13 +6,21 @@ import { Construct } from 'constructs';
 import { resolve } from 'path';
 import { Rule, Schedule } from 'aws-cdk-lib/aws-events';
 import { LambdaFunction } from 'aws-cdk-lib/aws-events-targets';
+import { CachePolicy, Distribution } from 'aws-cdk-lib/aws-cloudfront';
+import { RestApiOrigin } from 'aws-cdk-lib/aws-cloudfront-origins';
+import { AaaaRecord, ARecord, RecordTarget } from 'aws-cdk-lib/aws-route53';
+import { CloudFrontTarget } from 'aws-cdk-lib/aws-route53-targets';
+import { HostingStack } from './hosting-stack';
 
 export class ApiStack extends Stack {
   private gateway: RestApi;
   private cacheBucket: Bucket;
+  private hosting: HostingStack;
 
-  constructor(scope: Construct, id: string, props?: StackProps) {
+  constructor(scope: Construct, id: string, props: StackProps & { hosting: HostingStack }) {
     super(scope, id, props);
+
+    this.hosting = props.hosting;
 
     this.gateway = new RestApi(this, 'Gateway');
     this.cacheBucket = new Bucket(this, 'CacheBucket', {
@@ -22,6 +30,7 @@ export class ApiStack extends Stack {
     this.createStatusEndpoint();
     this.createFilesEndpoint();
     this.createCachePreloadCron();
+    this.createCloudfront();
   }
 
   private createStatusEndpoint() {
@@ -85,6 +94,29 @@ export class ApiStack extends Stack {
     });
 
     rule.addTarget(new LambdaFunction(lambda));
+  }
+
+  createCloudfront() {
+    const cloudfront = new Distribution(this, 'ApiDistribution', {
+      defaultBehavior: {
+        origin: new RestApiOrigin(this.gateway),
+        cachePolicy: CachePolicy.CACHING_DISABLED, //disabled cloudfront caching to test application level caching strategies
+      },
+      domainNames: ['bluegrid.bgdn.dev'],
+      certificate: this.hosting.certificate,
+    });
+
+    new ARecord(this, 'SubdomainA', {
+      zone: this.hosting.zone,
+      target: RecordTarget.fromAlias(new CloudFrontTarget(cloudfront)),
+      recordName: 'bluegrid.bgdn.dev',
+    });
+
+    new AaaaRecord(this, 'SubdomainAAAA', {
+      zone: this.hosting.zone,
+      target: RecordTarget.fromAlias(new CloudFrontTarget(cloudfront)),
+      recordName: 'bluegrid.bgdn.dev',
+    });
   }
 
   private getResource(name: string, parent: IResource) {

@@ -2,3 +2,4 @@
 /dist
 /cdk.out
 /cache
+cdk.context.json
