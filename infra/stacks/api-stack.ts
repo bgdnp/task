@@ -75,7 +75,7 @@ export class ApiStack extends Stack {
   private createCachePreloadCron() {
     const lambda = new Function(this, 'CachePreloadFunction', {
       runtime: Runtime.NODEJS_20_X,
-      code: Code.fromAsset(resolve(process.cwd(), 'dist/get-transformed-files')),
+      code: Code.fromAsset(resolve(process.cwd(), 'dist/cron/preload-cache')),
       handler: 'index.handler',
       functionName: 'cache-preload-handler',
       timeout: Duration.seconds(30),

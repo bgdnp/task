@@ -31,10 +31,6 @@ export class CacheService {
   }
 
   async load<T>(key: string): Promise<T | null> {
-    if (process.env.DISABLE_CACHE) {
-      return null;
-    }
-
     try {
       return await this.strategy.load(key, this.ttl);
     } catch (err) {

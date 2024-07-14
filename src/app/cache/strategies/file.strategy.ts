@@ -23,8 +23,10 @@ export class FileStrategy implements CacheStrategy {
 
     if (ttl) {
       const { mtime } = await stat(path);
+      const modifiedTime = new Date(mtime).getTime();
+      const expireTime = modifiedTime + ttl * 1000;
 
-      if (new Date(mtime).getTime() + ttl * 1000 < Date.now()) {
+      if (expireTime < Date.now()) {
         return null;
       }
     }
